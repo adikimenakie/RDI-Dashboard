@@ -766,7 +766,7 @@
   document.addEventListener('mouseout', function(e) {
     if (e.target.closest('.ef-partner')) tip.style.display = 'none';
   });
-}
+})();
 var DATA = null;
 
 // Populate dropdown
@@ -1221,7 +1221,7 @@ function initEffortDropdown() {
     o.value = p; o.textContent = p;
     sel.appendChild(o);
   });
-})();
+}
 
 function renderEffortView() {
   const proj = document.getElementById('effortProjectSelect').value;
@@ -1326,11 +1326,11 @@ function renderEffortView() {
 }
 
 
-// ── Load all data from external JSON ─────────────────────────────────────────
+// ── Load all data from external JSON ──────────────────────────────────────
 async function loadAllData() {
   try {
     const resp = await fetch('data.json');
-    if (!resp.ok) throw new Error('HTTP ' + resp.status + ' - data.json not found');
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const all = await resp.json();
     DATA = all.projects;
     UNI_DATA = all.uni;
@@ -1341,7 +1341,8 @@ async function loadAllData() {
     if (sel && DATA && DATA.projects) {
       DATA.projects.forEach(p => {
         const opt = document.createElement('option');
-        opt.value = p; opt.textContent = p;
+        opt.value = p;
+        opt.textContent = p;
         sel.appendChild(opt);
       });
     }
@@ -1352,14 +1353,15 @@ async function loadAllData() {
     }
 
   } catch(e) {
-    document.body.innerHTML = '<div style="font-family:sans-serif;padding:40px;color:#e6edf3;background:#0d1117;min-height:100vh">'
-      + '<h2 style="color:#f78166">⚠️ Σφάλμα φόρτωσης δεδομένων</h2>'
-      + '<p>Δεν ήταν δυνατή η φόρτωση του αρχείου <code>data.json</code>.</p>'
-      + '<p style="color:#8b949e">Βεβαιωθείτε ότι το αρχείο data.json βρίσκεται στον ίδιο φάκελο.</p>'
-      + '<pre style="color:#f78166">' + e.message + '</pre></div>';
+    console.error('loadAllData error:', e);
+    const wrap = document.getElementById('info-section');
+    if (wrap) wrap.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><p style="color:var(--accent3)">Σφάλμα φόρτωσης: ' + e.message + '</p></div>';
   }
 }
-loadAllData();
+
+document.addEventListener('DOMContentLoaded', function() {
+  loadAllData();
+});
 
 </script>
 </body>
